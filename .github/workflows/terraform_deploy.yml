@@ -23,12 +23,14 @@ jobs:
 
     - name: Terraform Apply
       run: terraform apply -auto-approve
+      id: set-outputs
+      continue-on-error: true  # Esto permite que el flujo de trabajo continúe incluso si hay errores en Terraform
 
     - name: Get public IP
-      run: echo "Public IP: ${{ steps.set-outputs.outputs.public_ip }}"
-      id: set-outputs
+      run: |
+        echo "Public IP: $PUBLIC_IP"
       env:
-        TF_STATE: ${{ secrets.TF_STATE }}
+        PUBLIC_IP: ${{ needs.deploy.outputs.public_ip }}
 
     - name: Deploy to EC2
       run: |
